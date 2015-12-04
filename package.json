@@ -1,0 +1,14 @@
+{
+  "name": "googlecal",
+  "version": "0.0.0",
+  "description": "easily publish events to google calendar",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Jonah Boretsky",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
