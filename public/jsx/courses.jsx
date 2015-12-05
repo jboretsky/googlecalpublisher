@@ -1,5 +1,42 @@
+var CourseItem = React.createClass({
+    render: function() {
+        var createItem = function(item) {
+            return (
+                <div> Hello </div>
+            );
+        }
+        return (
+            <div>
+                {this.props.items.map(createItem)}
+            </div>
+        );
+    }
+});
+
+var CourseItemWrapper = React.createClass({
+    getInitialState: function() {
+        return {listItems: []}
+    },
+    handleAdd: function(){
+        var id = this.state.listItems.length + 1;
+        var newItems = [{id: id}];
+        newItems = this.state.listItems.concat(newItems);
+        var nextText = ''; 
+        this.setState({listItems: newItems});
+    },
+    render: function() {
+        return (
+            <div>
+                <CourseItem items={this.state.listItems} />
+                <button onClick={this.handleAdd}>Add Item</button>
+            </div>
+        );
+    }
+});
+
+
 var Course = React.createClass({
-   render: function() {
+    render: function() {
         var createCourse = function(item){
             return (
                 <div className="panel panel-default" key={item.id}>
@@ -9,9 +46,8 @@ var Course = React.createClass({
                         </h4>
                     </div>
                     <div id={"collapse"+item.id} className="panel-collapse collapse in">
-                        {/*this is where we will inject another react class it is within the collapsible container*/}
                         <div className="panel-body">
-                            <h4> Item, Time, Date, Color </h4>
+                            <CourseItemWrapper />
                         </div>
                     </div>
                 </div>
@@ -22,6 +58,7 @@ var Course = React.createClass({
         );
    }
 });
+
 
 var CourseData = React.createClass({
     getInitialState: function() {
@@ -40,9 +77,6 @@ var CourseData = React.createClass({
             this.setState({items: newItems, text: nextText});
         }                   
     },
-
-    //use componentDidMount for initial action! (it's like document.onload)
-
     render: function(){
         return (
             <div>
