@@ -1,19 +1,19 @@
 var CourseItem = React.createClass({
     render: function() {
-        var deleteItemClos = this.props.deleteItem;
-        var titleChange = this.props.titleChange;
+        var itemChange = this.props.itemChange;
+        var deleteItem = this.props.deleteItem;
         var createItem = function(item, itemIndex) {
             return (
                 <div key={itemIndex} style={{marginBottom:'5px'}}>
                     <div className="row">
                         <div className="col-lg-12">
                             <div className="input-group">
-                                <input type="text" style={{borderRadius:'0px'}}className="form-control course-item-input" id={itemIndex} placeholder={item.text} onChange={titleChange} value={item.title} placeholder="Item Title" />
-                                <input type="text" style={{borderRadius:'0px'}}className="form-control course-item-input" id={itemIndex} placeholder={item.text} onChange={titleChange} value={item.title} placeholder="Time" />
-                                <input type="text" style={{borderRadius:'0px'}}className="form-control course-item-input" id={itemIndex} placeholder={item.text} onChange={titleChange} value={item.title} placeholder="Date" />
-                                <input type="text" style={{borderRadius:'0px'}}className="form-control course-item-input" id={itemIndex} placeholder={item.text} onChange={titleChange} value={item.title} placeholder="Color" />
+                                <input type="text" style={{borderRadius:'0px'}} className="form-control course-item-input" id={itemIndex} name="title" onChange={itemChange} value={item.title} placeholder="Item Title" />
+                                <input type="text" style={{borderRadius:'0px'}} className="form-control course-item-input" id={itemIndex} name="time" onChange={itemChange} value={item.time} placeholder="Time" />
+                                <input type="text" style={{borderRadius:'0px'}} className="form-control course-item-input" id={itemIndex} name="date" onChange={itemChange} value={item.date} placeholder="Date" />
+                                <input type="text" style={{borderRadius:'0px'}} className="form-control course-item-input" id={itemIndex} name="color" onChange={itemChange} value={item.color} placeholder="Color" />
                                 <div className="input-group-btn">
-                                    <button className="btn btn-danger" onClick={deleteItemClos} value={itemIndex}>Remove</button>
+                                    <button className="btn btn-danger" onClick={deleteItem} value={itemIndex}><span className="glyphicon glyphicon-remove" /></button>
                                 </div>
                             </div>
                         </div>
@@ -39,7 +39,7 @@ var CourseItemWrapper = React.createClass({
         //will need to add date, time, etc. to the state and do similar thing as above to make them work
         //ie. will need to give them all their own change functions as well
         //all the data in the listItems needs to be updated and consistent with view
-        var newItems = [{id: id, title: ''}];
+        var newItems = [{id: id, title: '', date: '', time: '', color: ''}];
         newItems = this.state.listItems.concat(newItems);
         this.setState({listItems: newItems});
     },
@@ -55,16 +55,16 @@ var CourseItemWrapper = React.createClass({
             this.setState({listItems: this.state.listItems});
         }
     },
-    titleChange: function(e) {
-        console.log(e.target.value);
-        this.state.listItems[e.target.id].title = e.target.value;
+    itemChange: function(item) {
+        this.state.listItems[item.target.id][item.target.name] = item.target.value;
         this.setState({listItems: this.state.listItems});
+
     },
     render: function() {
         return (
             <div>
-                <CourseItem items={this.state.listItems} deleteItem={this.deleteItem} titleChange={this.titleChange}/>
-                <button onClick={this.handleAdd}>Add Item</button>
+                <CourseItem items={this.state.listItems} deleteItem={this.deleteItem} itemChange={this.itemChange} />
+                <button className="btn btn-primary" onClick={this.handleAdd}>Add Item</button>
             </div>
         );
     }
