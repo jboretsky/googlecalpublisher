@@ -13,3 +13,8 @@
     color: grey;
     cursor: pointer;
 }
+
+.course-item-input {
+    width: 25% !important;
+}
+

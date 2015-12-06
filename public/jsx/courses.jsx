@@ -1,8 +1,24 @@
 var CourseItem = React.createClass({
     render: function() {
-        var createItem = function(item) {
+        var deleteItemClos = this.props.deleteItem;
+        var titleChange = this.props.titleChange;
+        var createItem = function(item, itemIndex) {
             return (
-                <div> Hello </div>
+                <div key={itemIndex} style={{marginBottom:'5px'}}>
+                    <div className="row">
+                        <div className="col-lg-12">
+                            <div className="input-group">
+                                <input type="text" style={{borderRadius:'0px'}}className="form-control course-item-input" id={itemIndex} placeholder={item.text} onChange={titleChange} value={item.title} placeholder="Item Title" />
+                                <input type="text" style={{borderRadius:'0px'}}className="form-control course-item-input" id={itemIndex} placeholder={item.text} onChange={titleChange} value={item.title} placeholder="Time" />
+                                <input type="text" style={{borderRadius:'0px'}}className="form-control course-item-input" id={itemIndex} placeholder={item.text} onChange={titleChange} value={item.title} placeholder="Date" />
+                                <input type="text" style={{borderRadius:'0px'}}className="form-control course-item-input" id={itemIndex} placeholder={item.text} onChange={titleChange} value={item.title} placeholder="Color" />
+                                <div className="input-group-btn">
+                                    <button className="btn btn-danger" onClick={deleteItemClos} value={itemIndex}>Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             );
         }
         return (
@@ -13,21 +29,41 @@ var CourseItem = React.createClass({
     }
 });
 
+//could throw this and above component into another source file? No data is passed between this and the course list
 var CourseItemWrapper = React.createClass({
     getInitialState: function() {
         return {listItems: []}
     },
     handleAdd: function(){
-        var id = this.state.listItems.length + 1;
-        var newItems = [{id: id}];
+        var id = this.state.listItems.length;
+        //will need to add date, time, etc. to the state and do similar thing as above to make them work
+        //ie. will need to give them all their own change functions as well
+        //all the data in the listItems needs to be updated and consistent with view
+        var newItems = [{id: id, title: ''}];
         newItems = this.state.listItems.concat(newItems);
-        var nextText = ''; 
         this.setState({listItems: newItems});
+    },
+    componentDidMount: function() {
+        var newItems = [{id: 0, title: ''}];
+        newItems = this.state.listItems.concat(newItems);
+        this.setState({listItems: newItems});
+    },
+    deleteItem: function(e) {
+        if(this.state.listItems.length > 1){
+            var index = parseInt(e.target.value, 10);
+            this.state.listItems.splice(index,1);
+            this.setState({listItems: this.state.listItems});
+        }
+    },
+    titleChange: function(e) {
+        console.log(e.target.value);
+        this.state.listItems[e.target.id].title = e.target.value;
+        this.setState({listItems: this.state.listItems});
     },
     render: function() {
         return (
             <div>
-                <CourseItem items={this.state.listItems} />
+                <CourseItem items={this.state.listItems} deleteItem={this.deleteItem} titleChange={this.titleChange}/>
                 <button onClick={this.handleAdd}>Add Item</button>
             </div>
         );
@@ -77,10 +113,15 @@ var CourseData = React.createClass({
             this.setState({items: newItems, text: nextText});
         }                   
     },
+    publish: function(){
+        console.log("Publishing...");
+    },
     render: function(){
         return (
             <div>
-                <h2>Courses</h2>
+                <h2>Google Calendar Publisher
+                    <button className="btn btn-success" style={{float:'right'}} onClick={this.publish}>Publish</button>
+                </h2>
                 <form onSubmit={this.handleSubmit}>
                 <div className="panel panel-default">
                     <div className="panel-heading">
