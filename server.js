@@ -10,5 +10,4 @@ app.get('/', function(req, res, next){
 });
 
 app.listen(PORT);
-//keepAlive(30);
 console.log('Server listening on port ' + PORT);
