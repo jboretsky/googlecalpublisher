@@ -7,14 +7,13 @@
 // also should transfer all CDN's to npm packages and browserify
 // Google calendar api working
 
+/*
+* THIS IS JUST A SAVE in case i fuck everything up
+*/
+
 var appStore = {
 	_state: {
 		panelHeading: '',
-		userInfo: {
-			userId: '',
-			userName: '',
-			userEmail: '',
-		},
 		courses: []
 	},
 	getState: function() {
@@ -69,10 +68,9 @@ var CourseItem = React.createClass({
                     <div className="row">
                         <div className="col-lg-12">
                             <div className="input-group">
-                                <input type="text" style={{borderRadius:'0px'}} className="form-control course-item-input" id={itemIndex} name="title" onChange={itemChange} value={item.title} placeholder="Item Title" />
-                                <input type="text" style={{borderRadius:'0px'}} className="form-control course-item-input" id={itemIndex} name="time" onChange={itemChange} value={item.time} placeholder="Time" />
-                                <input type="text" style={{borderRadius:'0px'}} className="form-control course-item-input" id={itemIndex} name="date" onChange={itemChange} value={item.date} placeholder="Date" />
-                                <input type="text" style={{borderRadius:'0px'}} className="form-control course-item-input" id={itemIndex} name="color" onChange={itemChange} value={item.color} placeholder="Color" />
+                                <input type="text" style={{borderRadius:'0px',width:'25%'}} className="form-control course-item-input" id={itemIndex} name="title" onChange={itemChange} value={item.title} placeholder="Item Title" />
+                                <div type="text" style={{borderRadius:'0px',width:'50%'}} className="form-control course-item-input" id={itemIndex} name="time" onChange={itemChange} value={item.time} placeholder="Time"> DateTime picker here </div>
+                                    <input type="text" style={{borderRadius:'0px',width:'25%'}} className="form-control course-item-input" id={itemIndex} name="color" onChange={itemChange} value={item.color} placeholder="Color picker here" />
                                 <div className="input-group-btn">
                                     <button className="btn btn-danger" onClick={deleteItem} value={itemIndex}><span className="glyphicon glyphicon-remove" /></button>
                                 </div>
@@ -175,16 +173,11 @@ var CourseData = React.createClass({
             this.setState(this.getStateFromStore());
         }                   
     },
-    onSignIn: function(googleUser){
-        var name = googleUser.getBasicProfile().getName();
-        var id = googleUser.getBasicProfile().getId();
-        var email = googleUser.getBasicProfile().getEmail();
-		stateDispatcher.addUserInfo(name,id,email);
-		this.setState(this.getStateFromStore());
-    },
     Publish: function(googleUser){
         //appStore.printState();
         
+        var self = this;
+
         var SCOPES = ["https://www.googleapis.com/auth/calendar"];
 
         gapi.auth.authorize({
@@ -202,46 +195,55 @@ var CourseData = React.createClass({
         }
         
         function loadCalendarApi() {
-            gapi.client.load('calendar', 'v3', listUpcomingEvents);
+            gapi.client.load('calendar', 'v3', postEvents);
         }
 
-        function listUpcomingEvents() {
-            var resource = {
-                "summary": "Appointment YAY",
-                "location": "Somewhere",
-                "start": {
-                    "dateTime": "2015-12-09T12:00:00.000-07:00"
-                },
-                "end": {
-                    "dateTime": "2015-12-09T12:30:00.000-07:00"
-                }
-            };
-            var request = gapi.client.calendar.events.insert({
-                'calendarId': 'primary',
-                'resource': resource
-            });
-            request.execute(function(resp) {
-                console.log(resp);
+        function postEvents() {
+            
+            //console.log(self.getStateFromStore().courses);
+            var title = "";
+            var date = "";
+            var time = "";
+            var color = "";
+            var course = "";
+            self.getStateFromStore().courses.forEach(function(item){
+                course = item.text;
+                item.innerItems.forEach(function(item){
+                    title = item.title;
+                    date = item.date;
+                    time = item.time;
+                    color = item.color;
+                    console.log(course + " " + title + " " + date + " " + time + " " + color);
+                    var resource = {
+                        "summary": course + ": " + title,
+                        "colorId": color,
+                        "start": {
+                            "dateTime": "2015-12-10T12:00:00.000-07:00"
+                        },
+                        "end": {
+                            "dateTime": "2015-12-10T12:30:00.000-07:00"
+                        }
+                    };
+                    //console.log(resource);
+                    var request = gapi.client.calendar.events.insert({
+                        'calendarId': 'primary',
+                        'resource': resource
+                    });
+                    request.execute(function(resp) {
+                        console.log(resp);
+                    });
+                });
             });
         }
     },
     componentDidMount: function(){
-        gapi.signin2.render('g-signin2', {
-            'scope': 'https://www.googleapis.com/auth/plus.login',
-            'width': 175,
-            'height': 34,
-            'text': 'sign in',
-            'longtitle': true,
-            'theme': 'dark',
-            'onsuccess': this.onSignIn
-        })
+        console.log("mounted");
     },
     render: function(){
         return (
             <div>
                 <h2>Google Calendar Publisher
                     <button className="btn btn-success" style={{float:'right', marginLeft:'5px', borderRadius:'0'}} onClick={this.Publish}>Publish</button>
-                    <div id="g-signin2" style={{float:'right'}}/>
                 </h2>
                 <form onSubmit={this.handleSubmit}>
                 <div className="panel panel-default">
